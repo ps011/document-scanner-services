@@ -2,7 +2,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const JwtStrategy = require('passport-jwt').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
-var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 
 // load up the user model
@@ -72,8 +72,7 @@ passport.use(new GoogleStrategy({
         callbackURL: "/users/google/callback"
     },
     function(accessToken, refreshToken, profile, done) {
-    console.log('Profile', profile);
-        user.findOneOrCreate(user, { googleId: profile.id , accessToken }, function (err, user) {
+        user.findOneOrCreate(user, { googleId: profile.id , email: profile.emails[0].value }, function (err, user) {
             return done(err, user);
         });
     }

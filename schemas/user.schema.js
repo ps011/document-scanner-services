@@ -67,7 +67,7 @@ userSchema.methods.comparePassword = (givenPassword, dbPassword, cb) => {
 };
 
 userSchema.statics.findOneOrCreate = (user, condition, callback) => {
-    user.findOne(condition, (err, result) => {
+    user.findOne({ email: condition.email}, (err, result) => {
         return result ? callback(err, result) : user.create(condition, (err, result) => { return callback(err, result) })
     })
 };

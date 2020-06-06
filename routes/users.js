@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 
 
 router.post('/login', passport.authenticate('local'), async (req, res) => {
-  const token = jwt.sign({username: req.body.username}, process.env.JWT_KEY, {expiresIn: '60m'});
+  const token = jwt.sign({email: req.body.email}, process.env.JWT_KEY, {expiresIn: '60m'});
   res.json({token});
 });
 
@@ -18,7 +18,8 @@ router.get('/logout', function(req, res) {
 router.get('/facebook', passport.authenticate('facebook', { scope : ['email'] }));
 
 router.get('/facebook/callback', passport.authenticate('facebook'), (req, res) => {
-    res.json({loggedIn: true})
+  const token = jwt.sign({email: req.body.email}, process.env.JWT_KEY, {expiresIn: '60m'});
+  res.json({token});
 });
 
 router.get('/google', passport.authenticate('google', {  scope: [
@@ -27,7 +28,8 @@ router.get('/google', passport.authenticate('google', {  scope: [
   ] }));
 
 router.get('/google/callback', passport.authenticate('google'), (req, res) => {
-    res.json({loggedIn: true})
+  const token = jwt.sign({email: req.body.email}, process.env.JWT_KEY, {expiresIn: '60m'});
+  res.json({token});
     });
 
 // Disabling route to get list of all users
@@ -55,7 +57,6 @@ router.post('/create', async (req, res) => {
   }
 });
 
-// TODO: Need to figure out what to do in case of a social login
 router.get('/:id', passport.authenticate('jwt'), async (req, res) => {
   try {
     const result = await user.findById(req.params.id);
