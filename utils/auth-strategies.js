@@ -2,6 +2,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const JwtStrategy = require('passport-jwt').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 
 // load up the user model
@@ -9,7 +10,6 @@ const user = require('../schemas/user.schema');
 
 
 passport.serializeUser((user, cb) => {
-    console.log('=======', user);
     cb(null, user._id || user.id);
 });
 
@@ -59,10 +59,23 @@ passport.use(new FacebookStrategy({
         profileFields: ['id', 'displayName', 'email']
     },
     function(accessToken, refreshToken, profile, cb) {
-        user.findOneOrCreate(user, { facebookId: profile.id, name: profile.displayName, email: profile.email }, function (err, user) {
+        user.findOneOrCreate(user, { facebookId: profile.id, name: profile.displayName, email: profile.emails[0].value }, function (err, user) {
             return cb(err, user);
         });
         cb(null, profile);
+    }
+));
+
+passport.use(new GoogleStrategy({
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: "/users/google/callback"
+    },
+    function(accessToken, refreshToken, profile, done) {
+    console.log('Profile', profile);
+        user.findOneOrCreate(user, { googleId: profile.id , accessToken }, function (err, user) {
+            return done(err, user);
+        });
     }
 ));
 

@@ -15,11 +15,20 @@ router.get('/logout', function(req, res) {
   res.json({logout: true});
 });
 
-router.get('/facebook', passport.authenticate('facebook'));
+router.get('/facebook', passport.authenticate('facebook', { scope : ['email'] }));
 
 router.get('/facebook/callback', passport.authenticate('facebook'), (req, res) => {
     res.json({loggedIn: true})
 });
+
+router.get('/google', passport.authenticate('google', {  scope: [
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'https://www.googleapis.com/auth/userinfo.email'
+  ] }));
+
+router.get('/google/callback', passport.authenticate('google'), (req, res) => {
+    res.json({loggedIn: true})
+    });
 
 // Disabling route to get list of all users
 // router.get('/', async (req, res) => {
@@ -46,6 +55,7 @@ router.post('/create', async (req, res) => {
   }
 });
 
+// TODO: Need to figure out what to do in case of a social login
 router.get('/:id', passport.authenticate('jwt'), async (req, res) => {
   try {
     const result = await user.findById(req.params.id);
