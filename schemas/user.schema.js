@@ -58,12 +58,16 @@ userSchema.pre('save', function (next) {
 
 
 userSchema.methods.comparePassword = (givenPassword, dbPassword, cb) => {
-    bcrypt.compare(givenPassword, dbPassword, function (err, isMatch) {
-        if (err) {
-            return cb(err);
-        }
-        cb(null, isMatch);
-    });
+    if (givenPassword === dbPassword) {
+        cb(null, true)
+    } else {
+        bcrypt.compare(givenPassword, dbPassword, function (err, isMatch) {
+            if (err) {
+                return cb(err);
+            }
+            cb(null, isMatch);
+        });
+    }
 };
 
 userSchema.statics.findOneOrCreate = (user, condition, callback) => {
