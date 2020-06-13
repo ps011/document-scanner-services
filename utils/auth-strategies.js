@@ -25,7 +25,11 @@ const opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = process.env.JWT_KEY;
 passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-    user.findOne({id: jwt_payload.id}, function(err, result) {
+    user.findOne({
+        $or: [
+            {email: jwt_payload.userIdentifier},
+            {username: jwt_payload.userIdentifier}
+        ]}, function(err, result) {
         if (err) {
             return done(err, false);
         }
@@ -37,9 +41,13 @@ passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
     });
 }));
 
-passport.use(new LocalStrategy( async (username, password, cb) => {
+passport.use(new LocalStrategy( async (userIdentifier, password, cb) => {
     try{
-        const result = await user.findOne({ username: username });
+        const result = await user.findOne({
+            $or: [
+                {email: userIdentifier},
+                {username: userIdentifier}
+            ]});
         if (result) {
             result.comparePassword(password, result.password, (err, isMatch) => {
                 if (isMatch && !err) {
@@ -81,5 +89,11 @@ passport.use(new GoogleStrategy({
         });
     }
 ));
+
+
+const isEmail = (email) => {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+};
 
 module.exports = passport;

@@ -6,8 +6,7 @@ const jwt = require('jsonwebtoken');
 
 
 router.post('/login', passport.authenticate('local'), async (req, res) => {
-  console.log('Achieved');
-  const token = jwt.sign({email: req.body.email}, process.env.JWT_KEY, {expiresIn: '60m'});
+  const token = jwt.sign({userIdentifier: req.body.username}, process.env.JWT_KEY, {expiresIn: '60m'});
   res.json({token});
 });
 
@@ -59,11 +58,15 @@ router.post('/create', async (req, res) => {
 });
 
 router.get('/:id', passport.authenticate('jwt'), async (req, res) => {
-  try {
-    const result = await user.findById(req.params.id);
-    res.status(200).send(result);
-  } catch (e) {
-    res.status(404).send(e.message);
+  if (req.user._id == req.params.id) {
+    try {
+      const result = await user.findById(req.params.id);
+      res.status(200).send(result);
+    } catch (e) {
+      res.status(404).send(e.message);
+    }
+  } else {
+    res.status(401).send('Unauthorized');
   }
 });
 
