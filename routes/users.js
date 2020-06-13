@@ -54,6 +54,12 @@ router.post('/create', async (req, res) => {
   }
 });
 
+
+router.get('/validate', passport.authenticate('jwt'), (req, res) => {
+  res.send(req.user);
+});
+
+
 router.get('/:id', passport.authenticate('jwt'), async (req, res) => {
   if (req.user._id == req.params.id) {
     try {

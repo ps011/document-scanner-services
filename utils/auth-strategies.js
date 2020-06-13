@@ -34,9 +34,9 @@ passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
             return done(err, false);
         }
         if (result) {
-            done(null, result);
+            return done(null, result);
         } else {
-            done(null, false);
+            return done(null, false);
         }
     });
 }));
