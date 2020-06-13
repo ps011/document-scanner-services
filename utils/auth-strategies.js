@@ -40,13 +40,17 @@ passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
 passport.use(new LocalStrategy( async (username, password, cb) => {
     try{
         const result = await user.findOne({ username: username });
-        result.comparePassword(password, result.password, (err, isMatch) => {
-            if (isMatch && !err) {
-                return cb(null, result);
-            } else {
-                return cb(null, false);
-            }
-        });
+        if (result) {
+            result.comparePassword(password, result.password, (err, isMatch) => {
+                if (isMatch && !err) {
+                    return cb(null, result);
+                } else {
+                    return cb(null, false);
+                }
+            });
+        } else {
+            return cb(null, false);
+        }
     } catch (e) {
         return cb(e);
     }

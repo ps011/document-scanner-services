@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 
 
 router.post('/login', passport.authenticate('local'), async (req, res) => {
+  console.log('Achieved');
   const token = jwt.sign({email: req.body.email}, process.env.JWT_KEY, {expiresIn: '60m'});
   res.json({token});
 });
