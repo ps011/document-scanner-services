@@ -6,8 +6,7 @@ const jwt = require('jsonwebtoken');
 
 
 router.post('/login', passport.authenticate('local'), async (req, res) => {
-  const token = jwt.sign({userIdentifier: req.body.username}, process.env.JWT_KEY, {expiresIn: '60m'});
-  res.json({token});
+  res.json({token: generateToken(req.body.username)});
 });
 
 router.get('/logout', function(req, res) {
@@ -18,8 +17,7 @@ router.get('/logout', function(req, res) {
 router.get('/facebook', passport.authenticate('facebook', { scope : ['email'] }));
 
 router.get('/facebook/callback', passport.authenticate('facebook'), (req, res) => {
-  const token = jwt.sign({email: req.body.email}, process.env.JWT_KEY, {expiresIn: '60m'});
-  res.json({token});
+  res.json({token: generateToken(req.body.email)});
 });
 
 router.get('/google', passport.authenticate('google', {  scope: [
@@ -28,8 +26,7 @@ router.get('/google', passport.authenticate('google', {  scope: [
   ] }));
 
 router.get('/google/callback', passport.authenticate('google'), (req, res) => {
-  const token = jwt.sign({email: req.body.email}, process.env.JWT_KEY, {expiresIn: '60m'});
-  res.json({token});
+  res.json({token: generateToken(req.body.email)});
     });
 
 // Disabling route to get list of all users
@@ -87,5 +84,10 @@ router.put('/update/:id', async (req, res) => {
     res.status(404).send(e)
   }
 });
+
+const generateToken = (payload) => {
+  return jwt.sign({userIdentifier: payload}, process.env.JWT_KEY, {expiresIn: '60m'});
+};
+
 
 module.exports = router;
