@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 
 
 router.post('/login', passport.authenticate('local'), async (req, res) => {
-  res.json({token: generateToken(req.body.username)});
+  res.json({token: generateToken(req.body.username), user: { username: req.user.username, email: req.user.email, id: req.user._id}});
 });
 
 router.get('/logout', function(req, res) {

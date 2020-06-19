@@ -11,7 +11,7 @@ const docSchema = new Schema({
         type: String
     },
     tags: {
-        type: Array[String],
+        type: [String],
     },
     category: String,
     size: Number,
