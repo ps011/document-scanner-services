@@ -13,7 +13,7 @@ router.post('/create', async (req, res) => {
             tags: req.body.tags,
             category: req.body.category,
             size: req.body.size,
-            format: req.body.size
+            format: req.body.format
         });
         res.status(200).send(result);
     } catch (e) {
